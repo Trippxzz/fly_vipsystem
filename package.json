@@ -1,0 +1,13 @@
+{
+  "name": "fly-bot",
+  "version": "1.9",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "test": "node bot.js"
+  },
+  "author": "tripp.#8553",
+  "dependencies": {
+    "discord.js": "^13.2.0"
+  }
+}
