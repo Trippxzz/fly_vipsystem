@@ -1,6 +1,9 @@
 ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 local ident = nil
+
+local webhook = ''
+
 exports('GiveVip', function(id, typevip, car, ped, money)
                 if GetPlayerName(id) then
                     local xPlayer = ESX.GetPlayerFromId(id)
@@ -56,12 +59,35 @@ exports('Removevip', function(id)
         end 
 end)
 
+
+RegisterNetEvent('fly:checkid')
+AddEventHandler('fly:checkid', function(idplayer)
+    local Player = ESX.GetPlayerFromId(source)
+    local name = GetPlayerName(idplayer)
+    print(idplayer)
+        local xPlayer = ESX.GetPlayerFromId(idplayer)
+        if xPlayer then
+            TriggerClientEvent('fly:confirmid', -1, idplayer, name)
+        else   
+            idplayer = 'N/A'
+            name = 'N/A'
+            TriggerClientEvent('fly:confirmid', -1, idplayer, name)
+            Player.showNotification("This player is not online")
+    end 
+end)
+
 RegisterNetEvent('code:generate')
-AddEventHandler('code:generate', function(a)
+AddEventHandler('code:generate', function(type, car, ped, money)
+    local xPlayer = ESX.GetPlayerFromId(source)
     a = string.random(13)
-    MySQL.Sync.execute('INSERT INTO fly_vip (code) VALUES (@code)', {
-        ['@code'] = a
+    MySQL.Sync.execute('INSERT INTO fly_vip (code, vip ,car, ped, money) VALUES (@code,@vip, @car, @ped, @money)', {
+        ['@code'] = a,
+        ['@vip'] = type,
+        ['@car'] = car,
+        ['@ped'] = ped,
+        ['@money'] = money
     })
+    LogDiscord("License: **"..xPlayer.getIdentifier().."** Steam Name: **"..xPlayer.GetPlayerName().."** has generated the code "..a.." with category"..type)
 end)
 
 RegisterNetEvent('give:vip')
@@ -83,6 +109,7 @@ AddEventHandler('give:vip', function(id, typevip, car, ped, money)
     PlayerVIP.showNotification("You have been granted VIP privilege")
          if xPlayer then
             xPlayer.showNotification("You gave VIP privileges to the player with ID: "..id)
+            LogDiscord("License: **"..xPlayer.getIdentifier().."** Steam Name: **"..xPlayer.GetPlayerName().."** has given him a vip "..typevip.." to License: **"..PlayerVIP.getIdentifier().."** Steam Name: **"..PlayerVIP.GetPlayerName().."**")
             else
                 local embed = {
                     color = "GOLD", 
@@ -340,4 +367,11 @@ function Identifier(idplayer)
              end
         end
     return ''
+end
+
+
+function LogDiscord(msg)
+    if webhook~=nil then
+        PerformHttpRequest(webhook, function(a,b,c)end, "POST", json.encode({embeds={{title="Fly VIP Logs",description=msg}}}), {["Content-Type"]="application/json"})
+    end
 end
