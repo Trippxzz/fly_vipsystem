@@ -165,7 +165,7 @@ client.on('messageCreate', async (message, interaction) => {
             const collector = m.createMessageComponentCollector({filter: ifilter, time: 60000})
             collector.on("collect", async i => {
               if (i.values[0] === "Bronze") {
-                ped = '   '
+                ped = 'notavailable'
                 car = 1
                 money = 1000
             }else if (i.values[0] === "Silver"){
@@ -188,7 +188,7 @@ client.on('messageCreate', async (message, interaction) => {
           }
         else {
       const embedfail = new MessageEmbed()
-          .setTitle('Debes poner una ID o una licencia de rockstar')
+          .setTitle('You must put an ID or a rockstar license.')
           .setColor('RED')
 
           message.channel.send({embeds: [embedfail]})
@@ -199,8 +199,8 @@ client.on('messageCreate', async (message, interaction) => {
     if (!message.member.permissions.has("MANAGE_MESSAGES")) return message.reply(`${message.author} **You do not have permissions to use this command.**`); 
     if (args[1]) {
       const embed = new MessageEmbed()
-      .setTitle('VIP Retirado')
-      .setDescription(`${message.author} le ha retirado el acceso vip a ${args[1]}`)
+      .setTitle('VIP Removed')
+      .setDescription(`${message.author} has withdrawn vip access to ${args[1]}`)
       .setColor('RED')
 
       message.channel.send({embeds: [embed]})
@@ -208,7 +208,7 @@ client.on('messageCreate', async (message, interaction) => {
   }
                else {
   const embedfail = new MessageEmbed()
-      .setTitle('Debes poner una ID o una licencia de rockstar')
+      .setTitle('You must put an ID or a rockstar license.')
       .setColor('RED')
 
       message.channel.send({embeds: [embedfail]})
@@ -227,7 +227,7 @@ if (args[0] == config.prefix + 'setped') {
 }
   else {
 const embedfail = new MessageEmbed()
-    .setTitle('Debes poner una ID o una licencia de rockstar o no has nombrado el ped')
+    .setTitle('You must put an ID or a rockstar license. o no has nombrado el ped')
     .setColor('RED')
     message.channel.send({embeds: [embedfail]})
   }}
