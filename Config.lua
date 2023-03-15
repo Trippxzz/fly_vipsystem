@@ -1,25 +1,29 @@
 Config = {}
 
 Config.Vips = {
-    ["Bronze"] = {
+     {
+        Icon = "🟫",
         Name = "Bronze",
         Ped = 'notavailable',
         Cars = 1,
         Money = 1000
     },
-    ["Silver"] = {
+     {
+        Icon = "⬜",
         Name = "Silver",
         Ped = 'notavailable',
         Cars = 2,
         Money = 2000
     },
-    ["Golden"] = {
+     {
+        Icon = "🟨",
         Name = "Golden",
         Ped = 1,
         Cars = 3,
         Money = 3000
     },
-    ["Diamond"] = {
+    {
+        Icon = "🟦",
         Name = "Diamond",
         Ped = 1,
         Cars = 5,

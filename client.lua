@@ -39,7 +39,6 @@ AddEventHandler('open:panel', function()
             local action = data.current.value 
             if action == 'generate' then
                 TypeMenuGenerate()
-                ESX.ShowNotification("You generated a VIP code, check the log channel to see the code generated")
                 menu.close()
             elseif action == 'give' then
                 GivePanel()
@@ -114,13 +113,14 @@ function PlayerPanel(player)
             menu.close()
     end)
 end
-
+local idplayerconfirm = nil
 RegisterNetEvent('fly:confirmid')
 AddEventHandler('fly:confirmid', function(idplayerconfirm, name)
     rname = name 
     idplayer = idplayerconfirm
     GivePanel()
 end)
+
 function GivePanel()
     ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'givepanel', {
         title = 'VIP Admin Menu',
@@ -150,7 +150,7 @@ function GivePanel()
             elseif action == 'type' then
                 TypeMenu()
             elseif action == 'confirm' then
-                TriggerServerEvent('give:vip', realid, type, car, ped, money)
+                TriggerServerEvent('give:vip', idplayer, type, car, ped, money)
                 idplayer = 'N/A'
                 rname = 'N/A'
                 type = 'N/A'
@@ -199,7 +199,7 @@ end
 function TypeMenu()
     local elements = {}
     for k,v in pairs(Config.Vips) do
-        table.insert(elements, {label = "VIP: " .. v.Name .." | Cars:".. v.Cars .. "| Ped?: ".. v.Ped .. "| Money: "..v.Money,  value = v.Name, cars = v.Cars, peds = v.Ped, moneyy = v.Money })
+        table.insert(elements, {label = v.Icon.." VIP: " .. v.Name .." | Cars:".. v.Cars .. " | Ped?: ".. v.Ped .. " | Money: "..v.Money,  value = v.Name, cars = v.Cars, peds = v.Ped, moneyy = v.Money})
     end
 
     ESX.UI.Menu.Open(
@@ -229,9 +229,8 @@ end
 function TypeMenuGenerate()
     local elements = {}
     for k,v in pairs(Config.Vips) do
-        table.insert(elements, {label = "VIP: " .. v.Name .." | Cars:".. v.Cars .. "| Ped?: ".. v.Ped .. "| Money: "..v.Money,  value = 'vip', cars = v.Cars, peds = v.Ped, moneyy = v.Money })
+        table.insert(elements, {label = "VIP: " .. v.Name .." | Cars:".. v.Cars .. "| Ped?: ".. v.Ped .. "| Money: "..v.Money,  value = v.Name, cars = v.Cars, peds = v.Ped, moneyy = v.Money })
     end
-    table.insert(elements, {label = 'Generate', value = 'generate'})
     ESX.UI.Menu.Open(
         'default', GetCurrentResourceName(), 'vip_type',
         {
@@ -242,18 +241,19 @@ function TypeMenuGenerate()
     function(data2, menu2)
 
         local action = data2.current.value
-        if action == 'vip' then
+        if action then
             type = action
             car = data2.current.cars
             ped = data2.current.peds
             money = data2.current.moneyy
-        elseif action == 'generate' then
             TriggerServerEvent('code:generate', type, car, ped, money)
         end
         menu2.close()
+        type = 'N/A'
 
     end, function(data2, menu2)
         menu2.close()
+        type = 'N/A'
     end)
 end
 
