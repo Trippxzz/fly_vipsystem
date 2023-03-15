@@ -2,7 +2,7 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 local ident = nil
 
-local webhook = ''
+local webhook = 'https://discord.com/api/webhooks/1062442060721946736/wvLz1X9kuhpjua_ZQzIolBkN6wS8Yfdb9JYrEjXRO9sJCpv1LbA-u-pTHfOWyJDZjVVf'
 
 exports('GiveVip', function(id, typevip, car, ped, money)
                 if GetPlayerName(id) then
@@ -73,25 +73,27 @@ AddEventHandler('fly:checkid', function(idplayer)
             name = 'N/A'
             TriggerClientEvent('fly:confirmid', -1, idplayer, name)
             Player.showNotification("This player is not online")
-    end 
+        end 
 end)
 
 RegisterNetEvent('code:generate')
-AddEventHandler('code:generate', function(type, car, ped, money)
+AddEventHandler('code:generate', function(typevip, car, ped, money)
     local xPlayer = ESX.GetPlayerFromId(source)
     a = string.random(13)
     MySQL.Sync.execute('INSERT INTO fly_vip (code, vip ,car, ped, money) VALUES (@code,@vip, @car, @ped, @money)', {
         ['@code'] = a,
-        ['@vip'] = type,
+        ['@vip'] = typevip,
         ['@car'] = car,
         ['@ped'] = ped,
         ['@money'] = money
     })
-    LogDiscord("License: **"..xPlayer.getIdentifier().."** Steam Name: **"..xPlayer.GetPlayerName().."** has generated the code "..a.." with category"..type)
+    xPlayer.showNotification("You generated a VIP code, check the log channel to see the code generated")
+    LogDiscord("License: **"..xPlayer.identifier.."** has generated the code `"..a.."` with category "..typevip.."")
 end)
 
 RegisterNetEvent('give:vip')
 AddEventHandler('give:vip', function(id, typevip, car, ped, money)
+    print(id)
     local xPlayer = ESX.GetPlayerFromId(source)
     local PlayerVIP = ESX.GetPlayerFromId(id)
     a = string.random(13)
@@ -109,7 +111,7 @@ AddEventHandler('give:vip', function(id, typevip, car, ped, money)
     PlayerVIP.showNotification("You have been granted VIP privilege")
          if xPlayer then
             xPlayer.showNotification("You gave VIP privileges to the player with ID: "..id)
-            LogDiscord("License: **"..xPlayer.getIdentifier().."** Steam Name: **"..xPlayer.GetPlayerName().."** has given him a vip "..typevip.." to License: **"..PlayerVIP.getIdentifier().."** Steam Name: **"..PlayerVIP.GetPlayerName().."**")
+            LogDiscord("License: **"..xPlayer.identifier.."** has given him a vip "..typevip.." to License: **"..PlayerVIP.identifier.."**")
             else
                 local embed = {
                     color = "GOLD", 
@@ -120,12 +122,12 @@ AddEventHandler('give:vip', function(id, typevip, car, ped, money)
         end
     else
         if xPlayer then
-            xPlayer.showNotification("Ya es vip")
+            xPlayer.showNotification("is already vip")
         else
             local embed = {
                 color = "RED", 
                 title = 'Error',
-                description = ' Ya es vip.'
+                description = ' is already vip.'
             }
             TriggerEvent('fly_vipsystem:SendEmbed', embed)
         end
@@ -165,9 +167,9 @@ end)
 RegisterNetEvent('fly:redeem')
 AddEventHandler('fly:redeem', function(code, source)
     local result = MySQL.Sync.fetchAll('SELECT * FROM fly_vip WHERE code = @code', {['@code'] = code})
+    local xPlayer = ESX.GetPlayerFromId(source)
     if result[1] ~= nil then
         local result2 = MySQL.Sync.fetchAll('SELECT * FROM fly_vip WHERE identifier = @identifier AND code = @code', {['@code'] = code, ['@identifier'] = 'notredeem'})
-        local xPlayer = ESX.GetPlayerFromId(source)
         ident = Identifier(source)
         if result2[1] ~= nil then
         xPlayer.showNotification("Congratulations, you now have access to VIP privileges")
@@ -175,6 +177,7 @@ AddEventHandler('fly:redeem', function(code, source)
             ['@identifier'] = ident,
             ['@code'] = code
         })
+        LogDiscord("License: **"..xPlayer.identifier.."** have redeemed a vip code `"..code.."`")
         else
             xPlayer.showNotification("Someone already redeemed this code")
         end
@@ -243,8 +246,7 @@ ESX.RegisterCommand('vippanel', "admin", function(source, args, showError)
     TriggerClientEvent('open:panel', -1)
 end)
 
-RegisterCommand('redeem', function(source, args)
-    print(args[1])
+RegisterCommand('redeemvip', function(source, args)
     TriggerEvent("fly:redeem", args[1], source)
 end)
 
@@ -371,7 +373,5 @@ end
 
 
 function LogDiscord(msg)
-    if webhook~=nil then
-        PerformHttpRequest(webhook, function(a,b,c)end, "POST", json.encode({embeds={{title="Fly VIP Logs",description=msg}}}), {["Content-Type"]="application/json"})
-    end
+        PerformHttpRequest(webhook, function(a,b,c)end, "POST", json.encode({embeds={{title="Fly VIP Logs",description=msg, color =3092790}}}), {["Content-Type"]="application/json"})
 end
