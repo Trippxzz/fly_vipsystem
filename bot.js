@@ -97,7 +97,7 @@ client.on('messageCreate', async (message, interaction) => {
             const collector = m.createMessageComponentCollector({filter: ifilter, time: 60000})
             collector.on("collect", async i => {
               if (i.values[0] === "Bronze") {
-                ped = '   '
+                ped = 'notavailable'
                 car = 1
                 money = 1000
             }else if (i.values[0] === "Silver"){
