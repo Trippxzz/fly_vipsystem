@@ -8,3 +8,5 @@ https://youtu.be/zrNloK9b1ro
 The second step is to download the recommended version of https://nodejs.org/en
 
 Once ready all the steps should only startear the script and wait for all the requirements are downloaded into the same script automatically
+
+If you have any doubts you can consult without any problem in our discord https://discord.gg/ZME2MjD8D6
