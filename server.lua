@@ -2,7 +2,7 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 local ident = nil
 
-local webhook = 'https://discord.com/api/webhooks/1062442060721946736/wvLz1X9kuhpjua_ZQzIolBkN6wS8Yfdb9JYrEjXRO9sJCpv1LbA-u-pTHfOWyJDZjVVf'
+local webhook = 'https://discord.com/api/webhooks/1062442060721946736/wvLz1X9kuhpjua_ZQzIolBkN6wS8Yfdb9JYrEjXRO9sJCpv1LbA-u-pTHfOWyJDZjVVf' --#####PUT YOUR WEBHOOK LINK ######--
 
 exports('GiveVip', function(id, typevip, car, ped, money)
                 if GetPlayerName(id) then
@@ -36,12 +36,12 @@ exports('SetPed', function(id, haskey)
         ident = Identifier(id)
         local xPlayer = ESX.GetPlayerFromId(id)
         if xPlayer then
-            TriggerEvent('fly:setpedid', id, haskey)          
+            TriggerEvent('fly:setped', id, haskey)
         else   
             print('log')
         end
     else
-        TriggerEvent('fly:setped', id, haskey)
+        TriggerEvent('fly:setpedid', id, haskey)   
     end 
 end)
 
@@ -115,8 +115,8 @@ AddEventHandler('give:vip', function(id, typevip, car, ped, money)
             else
                 local embed = {
                     color = "GOLD", 
-                    title = 'Error',
-                    description = ' You gave VIP privileges to the player with ID: '..ident..' `'..a..'`'
+                    title = 'Success',
+                    description = ' You gave VIP privileges to the player with ID: '..ident..'  `'..a..'`'
                 }
                 TriggerEvent('fly_vipsystem:SendEmbed', embed)
         end
@@ -148,7 +148,7 @@ AddEventHandler('give:vipident', function(id, typevip, car, ped, money)
     local embed = {
         color = "GOLD", 
         title = 'SUCCESS',
-        description = ' You gave VIP privileges to the player with ID: '..id.. '`'..a..'`'
+        description = ' You gave VIP privileges to the player with ID: '..id.. ' `'..a..'`'
     }
     TriggerEvent('fly_vipsystem:SendEmbed', embed)
 end)
@@ -156,7 +156,9 @@ end)
 
 RegisterNetEvent('fly:removevip')
 AddEventHandler('fly:removevip', function(player)
+    local xPlayer = ESX.GetPlayerFromId(source)
     MySQL.Async.execute("DELETE FROM fly_vip WHERE identifier = @identifier",{['@identifier'] = player}) 
+    LogDiscord("License: **"..xPlayer.identifier.."** has removed "..player)
 end)
 
 RegisterNetEvent('fly:removevipident')
@@ -185,25 +187,6 @@ AddEventHandler('fly:redeem', function(code, source)
         xPlayer.showNotification("Invalid code")
     end
 end)
-
-
-
-
-local charset = {}
-
-for i = 48,  57 do table.insert(charset, string.char(i)) end
-for i = 65,  90 do table.insert(charset, string.char(i)) end
-for i = 97, 122 do table.insert(charset, string.char(i)) end
-
-
-function string.random(length)
-	math.randomseed(os.time())
-	if length > 0 then
-		return string.random(length - 1) .. charset[math.random(1, #charset)]
-	else
-		return ""
-	end
-end
 
 
 ESX.RegisterServerCallback("fly:vipplayers", function(source, cb)
@@ -239,22 +222,6 @@ AddEventHandler('fly:searchvip', function()
 	end)
 end)
 
-
-
-
-ESX.RegisterCommand('vippanel', "admin", function(source, args, showError)
-    TriggerClientEvent('open:panel', -1)
-end)
-
-RegisterCommand('redeemvip', function(source, args)
-    TriggerEvent("fly:redeem", args[1], source)
-end)
-
-RegisterCommand('vipmenu', function(source)
-    TriggerEvent("fly:checkvip", source)
-end)
-
-local totalcars, haveped, totalmoney = nil, nil, nil
 RegisterNetEvent('fly:checkvip')
 AddEventHandler('fly:checkvip', function(source)
     ident = Identifier(source)
@@ -287,6 +254,7 @@ AddEventHandler('fly:setped', function(player, haskeyped)
         ['@ped'] = haskeyped,
     })
     xPlayer.showNotification('You have given the ped '..haskeyped..' to the '..ident)
+    LogDiscord("License: **"..xPlayer.identifier.."** has given the ped: "..haskeyped.." to player "..player)
     else
         if xPlayer then
         xPlayer.showNotification("Player vip does not allow peds")
@@ -343,7 +311,7 @@ AddEventHandler('claim:money', function()
 end)
 
 RegisterServerEvent('fly:givecar')
-AddEventHandler('fly:givecar', function (model, vehicleprops)
+AddEventHandler('fly:givecar', function (model, vehicleprops, cars)
 	local xPlayer = ESX.GetPlayerFromId(source)
     ident = Identifier(source)
 	MySQL.Async.execute('INSERT INTO owned_vehicles (owner, plate, vehicle, stored, type) VALUES (@owner, @plate, @vehicle, @stored, @type)',
@@ -359,8 +327,41 @@ AddEventHandler('fly:givecar', function (model, vehicleprops)
     MySQL.Sync.execute('UPDATE fly_vip SET car = car - 1 WHERE identifier = @identifier', {
         ['@identifier'] = ident
     })
+    LogDiscord("License: **"..xPlayer.identifier.."** has traded in his "..model.." vehicle and has "..cars.." vehicles left to trade in.")
 end)
 
+ESX.RegisterCommand('vippanel', "admin", function(source, args, showError)
+    TriggerClientEvent('open:panel', -1)
+end)
+
+
+RegisterCommand('redeemvip', function(source, args)
+    TriggerEvent("fly:redeem", args[1], source)
+end)
+
+RegisterCommand('vipmenu', function(source)
+    TriggerEvent("fly:checkvip", source)
+end)
+
+
+
+
+
+local charset = {}
+
+for i = 48,  57 do table.insert(charset, string.char(i)) end
+for i = 65,  90 do table.insert(charset, string.char(i)) end
+for i = 97, 122 do table.insert(charset, string.char(i)) end
+
+
+function string.random(length)
+	math.randomseed(os.time())
+	if length > 0 then
+		return string.random(length - 1) .. charset[math.random(1, #charset)]
+	else
+		return ""
+	end
+end
 
 function Identifier(idplayer)
     for _,v in ipairs(GetPlayerIdentifiers(idplayer)) do
