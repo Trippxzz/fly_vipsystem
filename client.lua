@@ -317,6 +317,7 @@ end)
 RegisterNetEvent('fly:spawnped')
 AddEventHandler('fly:spawnped', function(ped)
     if ped ~= 'notavailable' then
+        if ped ~= '1' then
         useped = true
         local modelHash = GetHashKey(ped)
         SetPedDefaultComponentVariation(PlayerPedId())
@@ -327,6 +328,9 @@ AddEventHandler('fly:spawnped', function(ped)
             TriggerEvent('esx:restoreLoadout')
             SetPedComponentVariation(PlayerPedId(), 8, 0, 0, 2)
         end)
+    else
+        ESX.ShowNotification("Ask a staff member to assign you the ped you want")
+    end
     else
         ESX.ShowNotification("Your vip is not entitled to a ped")
     end
