@@ -6,8 +6,7 @@ author 'Fly Development'
 server_scripts {
      '@mysql-async/lib/MySQL.lua',
      'server.lua',
-     'bot.js',
-     'interactionCreate.js'
+     'bot.js'
 } 
 client_scripts {
      'client.lua',
