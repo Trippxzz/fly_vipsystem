@@ -2,7 +2,7 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 local ident = nil
 
-local webhook = 'https://discord.com/api/webhooks/1062442060721946736/wvLz1X9kuhpjua_ZQzIolBkN6wS8Yfdb9JYrEjXRO9sJCpv1LbA-u-pTHfOWyJDZjVVf' --#####PUT YOUR WEBHOOK LINK ######--
+local webhook = '' --#####PUT YOUR WEBHOOK LINK ######--
 
 exports('GiveVip', function(id, typevip, car, ped, money)
                 if GetPlayerName(id) then
