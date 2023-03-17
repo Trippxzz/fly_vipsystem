@@ -1,5 +1,6 @@
 ESX = nil
 local PlayerData = {}
+
 Citizen.CreateThread(function()
     while ESX == nil do
         TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
@@ -113,6 +114,7 @@ function PlayerPanel(player)
             menu.close()
     end)
 end
+
 local idplayerconfirm = nil
 RegisterNetEvent('fly:confirmid')
 AddEventHandler('fly:confirmid', function(idplayerconfirm, name)
@@ -229,7 +231,7 @@ end
 function TypeMenuGenerate()
     local elements = {}
     for k,v in pairs(Config.Vips) do
-        table.insert(elements, {label = "VIP: " .. v.Name .." | Cars:".. v.Cars .. "| Ped?: ".. v.Ped .. "| Money: "..v.Money,  value = v.Name, cars = v.Cars, peds = v.Ped, moneyy = v.Money })
+        table.insert(elements, {label = v.Icon.." VIP: " .. v.Name .." | Cars:".. v.Cars .. "| Ped?: ".. v.Ped .. "| Money: "..v.Money,  value = v.Name, cars = v.Cars, peds = v.Ped, moneyy = v.Money })
     end
     ESX.UI.Menu.Open(
         'default', GetCurrentResourceName(), 'vip_type',
@@ -286,7 +288,6 @@ AddEventHandler('fly:success', function(vip, cars, peds, moneyx2)
             if val == 'choosecar' then
                 Menutochoosevehicle(vip, cars)
             elseif val == 'ped' then
-                useped = true
                 TriggerServerEvent('fly:checkped')
                  menu.close()
             elseif val == 'fixpj' then
@@ -316,6 +317,7 @@ end)
 RegisterNetEvent('fly:spawnped')
 AddEventHandler('fly:spawnped', function(ped)
     if ped ~= 'notavailable' then
+        useped = true
         local modelHash = GetHashKey(ped)
         SetPedDefaultComponentVariation(PlayerPedId())
         ESX.Streaming.RequestModel(modelHash, function()
@@ -354,7 +356,7 @@ function Menutochoosevehicle(vip, cars)
 
                     local vehicleprops = ESX.Game.GetVehicleProperties(vehicle)
                     SetPedIntoVehicle(PlayerPedId(),vehicle,-1)
-                    TriggerServerEvent('fly:givecar', action, vehicleprops)	
+                    TriggerServerEvent('fly:givecar', action, vehicleprops, cars)	
                 end		
             end)
             ESX.UI.Menu.CloseAll()
