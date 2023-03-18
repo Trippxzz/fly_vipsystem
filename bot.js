@@ -183,6 +183,7 @@ client.on('messageCreate', async (message, interaction) => {
                 car = 5
                 money = 4000
                 }
+                await i.deferUpdate()
                 return exports['fly_vipsystem'].GiveVip(args[1], i.values[0], car, ped, money);
             })
 
