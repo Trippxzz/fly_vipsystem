@@ -18,7 +18,8 @@ exports('GiveVip', function(id, typevip, car, ped, money)
 end)
 
 exports('GenerateCode', function(a, typevip, car, ped, money)
-    MySQL.Sync.execute('INSERT INTO fly_vip (code, vip ,car, ped, money) VALUES (@code,@vip, @car, @ped, @money)', {
+    MySQL.Sync.execute('INSERT INTO fly_vip (identifier, code, vip ,car, ped, money) VALUES (@identifier, @code,@vip, @car, @ped, @money)', {
+        ['identifier'] = 'notredeem',
         ['@code'] = a,
         ['@vip'] = typevip,
         ['@car'] = car,
@@ -80,7 +81,8 @@ RegisterNetEvent('code:generate')
 AddEventHandler('code:generate', function(typevip, car, ped, money)
     local xPlayer = ESX.GetPlayerFromId(source)
     a = string.random(13)
-    MySQL.Sync.execute('INSERT INTO fly_vip (code, vip ,car, ped, money) VALUES (@code,@vip, @car, @ped, @money)', {
+    MySQL.Sync.execute('INSERT INTO fly_vip (identifier, code, vip ,car, ped, money) VALUES (@identifier, @code,@vip, @car, @ped, @money)', {
+        ['@identifier'] = 'notredeem',
         ['@code'] = a,
         ['@vip'] = typevip,
         ['@car'] = car,
@@ -174,12 +176,17 @@ AddEventHandler('fly:redeem', function(code, source)
         local result2 = MySQL.Sync.fetchAll('SELECT * FROM fly_vip WHERE identifier = @identifier AND code = @code', {['@code'] = code, ['@identifier'] = 'notredeem'})
         ident = Identifier(source)
         if result2[1] ~= nil then
-        xPlayer.showNotification("Congratulations, you now have access to VIP privileges")
-        MySQL.Sync.execute('UPDATE fly_vip SET identifier = @identifier WHERE code = @code', {
-            ['@identifier'] = ident,
-            ['@code'] = code
-        })
-        LogDiscord("License: **"..xPlayer.identifier.."** have redeemed a vip code `"..code.."`")
+            local result3 = MySQL.Sync.fetchAll('SELECT * FROM fly_vip WHERE identifier = @identifier', {['@identifier'] = ident})
+                if result3[1] == nil then
+                    xPlayer.showNotification("Congratulations, you now have access to VIP privileges")
+                    MySQL.Sync.execute('UPDATE fly_vip SET identifier = @identifier WHERE code = @code', {
+                        ['@identifier'] = ident,
+                        ['@code'] = code
+                    })
+                    LogDiscord("License: **"..xPlayer.identifier.."** have redeemed a vip code `"..code.."`")
+                else
+                    xPlayer.showNotification("You are already vip")
+                end
         else
             xPlayer.showNotification("Someone already redeemed this code")
         end
