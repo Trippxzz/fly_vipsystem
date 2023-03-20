@@ -337,10 +337,9 @@ AddEventHandler('fly:givecar', function (model, vehicleprops, cars)
     LogDiscord("License: **"..xPlayer.identifier.."** has traded in his "..model.." vehicle and has "..cars.." vehicles left to trade in.")
 end)
 
-ESX.RegisterCommand('vippanel', "admin", function(source, args, showError)
-    TriggerClientEvent('open:panel', -1)
-end)
-
+ESX.RegisterCommand('vippanel', 'admin', function(xPlayer, args, showError)
+	xPlayer.triggerEvent('open:panel')
+end, false)
 
 RegisterCommand('redeemvip', function(source, args)
     TriggerEvent("fly:redeem", args[1], source)
