@@ -235,7 +235,7 @@ AddEventHandler('fly:checkvip', function(source)
     local xPlayer = ESX.GetPlayerFromId(source)
 	local result =  MySQL.Sync.fetchAll('SELECT * FROM fly_vip WHERE identifier = @identifier', {['@identifier'] = ident})
     if result[1] ~= nil then
-        TriggerClientEvent('fly:success', -1, result[1].vip, result[1].car, result[1].ped, result[1].money)
+        xPlayer.triggerEvent('fly:success', result[1].vip, result[1].car, result[1].ped, result[1].money)
     else
         xPlayer.showNotification('You are not vip, but you can buy one in our discord')
     end
@@ -247,7 +247,7 @@ AddEventHandler('fly:checkped', function()
     ident = Identifier(source)
 	local result =  MySQL.Sync.fetchAll('SELECT ped FROM fly_vip WHERE identifier = @identifier', {['@identifier'] = ident})
     if result[1] ~= nil then
-        TriggerClientEvent('fly:spawnped', -1, result[1].ped)
+        xPlayer.triggerEvent('fly:spawnped', result[1].ped)
     end
 end)
 
